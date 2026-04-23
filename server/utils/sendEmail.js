@@ -17,6 +17,8 @@ const getTransporter = () => {
     host: 'smtp.gmail.com',
     port: 587,
     secure: false,
+    connectionTimeout: 10000,
+    socketTimeout: 10000,
     auth: {
       user: EMAIL_USER,
       pass: EMAIL_PASS,
