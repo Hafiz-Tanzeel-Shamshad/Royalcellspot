@@ -39,7 +39,7 @@ function App() {
       <div style={styles.app}>
         {/* Announcement Bar */}
         <div style={styles.announcement}>
-          <span>✈️ FREE INTERNATIONAL SHIPPING ON ORDERS ABOVE $500 • 🔒 Secure Checkout • ✓ Authentic Products</span>
+          <span>✈️ aaaaFREE INTERNATIONAL SHIPPING ON ORDERS ABOVE $500 • 🔒 Secure Checkout • ✓ Authentic Products</span>
         </div>
         
         <Navbar />
