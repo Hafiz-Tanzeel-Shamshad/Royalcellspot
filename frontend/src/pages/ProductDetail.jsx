@@ -103,7 +103,7 @@ function ProductDetail() {
 
   return (
     <>
-    <div style={styles.container}>
+    <div style={styles.container} className="product-detail-page">
       {/* Breadcrumb */}
       <div style={styles.breadcrumb}>
         <span onClick={() => navigate('/')} style={styles.breadcrumbLink}>Home</span>
@@ -113,16 +113,17 @@ function ProductDetail() {
         <span style={styles.breadcrumbCurrent}>{product.name}</span>
       </div>
 
-      <div style={styles.productLayout}>
+      <div style={styles.productLayout} className="product-layout">
         {/* Product Image */}
         <motion.div 
           style={styles.imageSection}
+          className="product-image-section"
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.5 }}
         >
-          <div style={styles.imageWrapper}>
-            <img src={product.image} alt={product.name} style={styles.productImage} />
+          <div style={styles.imageWrapper} className="product-image-wrapper">
+            <img src={product.image} alt={product.name} style={styles.productImage} className="product-image-img" />
             {discount > 0 && (
               <div style={styles.discountBadge}>Save {discount}%</div>
             )}
@@ -132,6 +133,7 @@ function ProductDetail() {
         {/* Product Info */}
         <motion.div 
           style={styles.infoSection}
+          className="product-info-section"
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.5, delay: 0.2 }}
@@ -213,7 +215,7 @@ function ProductDetail() {
           </div>
 
           {/* Action Buttons */}
-          <div style={styles.actionButtons}>
+          <div style={styles.actionButtons} className="product-action-buttons">
             <motion.button
               style={styles.addToCartBtn}
               onClick={handleAddToCart}

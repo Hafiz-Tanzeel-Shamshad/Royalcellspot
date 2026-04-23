@@ -18,7 +18,7 @@ function Cart() {
 
   if (items.length === 0) {
     return (
-      <div style={styles.emptyCart}>
+      <div style={styles.emptyCart} className="cart-page empty">
         <motion.div
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
@@ -39,13 +39,13 @@ function Cart() {
   }
 
   return (
-    <div style={styles.container}>
+    <div style={styles.container} className="cart-page">
       <div style={styles.header}>
         <h1 style={styles.title}>Shopping Cart</h1>
         <p style={styles.itemCount}>{items.reduce((sum, item) => sum + item.quantity, 0)} item(s)</p>
       </div>
 
-      <div style={styles.layout}>
+      <div style={styles.layout} className="cart-layout">
         {/* Cart Items */}
         <div style={styles.cartItems}>
           <AnimatePresence>
@@ -57,10 +57,12 @@ function Cart() {
                 exit={{ opacity: 0, height: 0, marginBottom: 0 }}
                 transition={{ delay: index * 0.1 }}
                 style={styles.cartItem}
+                className="cart-item"
               >
                 {/* Product Image */}
                 <div 
                   style={styles.itemImage}
+                  className="cart-item-image"
                   onClick={() => navigate(`/product/${item.id}`)}
                 >
                   <img src={item.image} alt={item.name} style={styles.itemImg} />
@@ -78,15 +80,7 @@ function Cart() {
                         {item.name}
                       </h3>
                     </div>
-                    <button 
-                      onClick={() => removeItem(item.id, item.selectedColor, item.selectedStorage)}
-                      style={styles.removeBtn}
-                    >
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <polyline points="3 6 5 6 21 6"/>
-                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
-                      </svg>
-                    </button>
+                    {/* remove button intentionally omitted for mobile/UI preference */}
                   </div>
 
                   {/* Variants */}
@@ -137,6 +131,7 @@ function Cart() {
         {/* Order Summary */}
         <motion.div 
           style={styles.summary}
+          className="cart-summary"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}

@@ -499,6 +499,242 @@ select:focus {
   background-color: var(--color-white);
 }
 
+/* Mobile-specific improvements: overrides to make UI comfortable on small screens
+   These use conservative !important rules to avoid changing component logic.
+*/
+@media (max-width: 768px) {
+  /* Reduce global spacing */
+  body {
+    font-size: 15px;
+  }
+
+  /* Make images scale down reliably */
+  img {
+    max-width: 100% !important;
+    height: auto !important;
+    display: block;
+  }
+
+  /* Main page padding reductions */
+  main, .container {
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+  }
+
+  /* Headings: scale down on small screens */
+  h1 { font-size: 22px !important; }
+  h2 { font-size: 18px !important; }
+  h3 { font-size: 16px !important; }
+
+  /* Product list/grid fallback: force single column on very narrow devices */
+  .grid, [role="list"], [data-grid] {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Product card adjustments: reduce paddings and image height */
+  .product-card, .card, [data-product-card] {
+    border-radius: 12px !important;
+    padding: 12px !important;
+  }
+
+  /* Reduce image wrapper padding and height for product cards */
+  .image-wrapper, .img-wrapper, .product-image-wrapper {
+    padding: 12px !important;
+    min-height: 160px !important;
+  }
+
+  /* Buttons: larger tappable areas and full width */
+  button {
+    padding: 12px 14px !important;
+    font-size: 15px !important;
+  }
+
+  /* Search input and filters stack better */
+  .filters, .searchWrapper, .brandFilters, .sortOptions {
+    width: 100% !important;
+    display: block !important;
+  }
+
+  /* Mobile menu: ensure it is full width and readable */
+  nav { padding: 8px 12px !important; }
+  nav a { font-size: 16px !important; }
+  nav button { padding: 10px !important; }
+
+  /* Modal: occupy most of the viewport */
+  .modal, .modal-dialog {
+    max-width: 92% !important;
+    margin: 0 4% !important;
+  }
+
+  /* Footer links stack */
+  footer, .footer { padding: 18px 12px !important; }
+  footer .footer-columns, .footer-columns { display: block !important; gap: 12px !important; }
+
+  /* Small fixes for badges and icons */
+  .cartBadge, .cart-badge, [data-cart-badge] {
+    top: -4px !important;
+    right: -4px !important;
+    min-width: 18px !important;
+    height: 18px !important;
+    font-size: 11px !important;
+  }
+}
+
+/* Cart page specific mobile rules */
+@media (max-width: 768px) {
+  .cart-page {
+    padding: 16px !important;
+    background-color: #0a0a0a !important;
+  }
+
+  .cart-layout {
+    display: block !important;
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+
+  .cart-item {
+    flex-direction: column !important;
+    gap: 12px !important;
+    padding: 12px !important;
+  }
+
+  .cart-item-image {
+    width: 100% !important;
+    height: 180px !important;
+    border-radius: 12px !important;
+  }
+
+  .cart-summary {
+    position: static !important;
+    width: 100% !important;
+    padding: 16px !important;
+    margin-top: 4px !important;
+  }
+
+  .clearCartBtn, .checkoutBtn, .shopNowBtn, button {
+    width: 100% !important;
+  }
+}
+
+/* Constrain cart thumbnail images on small screens */
+@media (max-width: 768px) {
+  .cart-item-image img,
+  .cart-item img,
+  .cart-item-image > img {
+    width: 120px !important;
+    max-width: 40% !important;
+    height: auto !important;
+    object-fit: contain !important;
+    padding: 6px !important;
+    display: block !important;
+    margin: 0 auto !important;
+  }
+
+  .cart-item {
+    align-items: center !important;
+  }
+}
+
+/* Checkout page specific mobile rules */
+@media (max-width: 768px) {
+  .checkout-page {
+    display: block !important;
+    padding: 16px !important;
+  }
+
+  .checkout-form {
+    width: 100% !important;
+    margin-bottom: 16px !important;
+  }
+
+  .checkout-summary {
+    width: 100% !important;
+    margin-top: 8px !important;
+    position: static !important;
+  }
+
+  .cardRow {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 8px !important;
+  }
+
+  .iconInput input {
+    padding-left: 44px !important;
+  }
+}
+
+/* Product Detail mobile rules */
+@media (max-width: 768px) {
+  .product-detail-page {
+    padding: 16px !important;
+    background-color: #0a0a0a !important;
+  }
+
+  .product-layout {
+    display: block !important;
+    grid-template-columns: 1fr !important;
+    gap: 20px !important;
+  }
+
+  .product-image-section {
+    position: static !important;
+  }
+
+  .product-image-wrapper {
+    padding: 16px !important;
+    border-radius: 12px !important;
+    min-height: 220px !important;
+  }
+
+  .product-image-img {
+    max-height: 320px !important;
+    width: auto !important;
+    max-width: 100% !important;
+    object-fit: contain !important;
+    display: block !important;
+    margin: 0 auto !important;
+  }
+
+  .product-info-section {
+    padding: 0 !important;
+  }
+
+  .product-action-buttons {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 10px !important;
+  }
+
+  .product-action-buttons button,
+  .product-action-buttons .btn {
+    width: 100% !important;
+    padding: 14px 16px !important;
+    font-size: 16px !important;
+  }
+
+  .optionButtons {
+    display: flex !important;
+    gap: 8px !important;
+    flex-wrap: wrap !important;
+  }
+
+  .quantitySelector {
+    width: 100% !important;
+    justify-content: flex-start !important;
+  }
+
+  .qtyBtn {
+    width: 44px !important;
+    height: 44px !important;
+  }
+
+  .qtyValue {
+    width: 48px !important;
+  }
+}
+
 /* Spacing Utilities */
 .m-0 {
   margin: 0;

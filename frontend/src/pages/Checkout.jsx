@@ -135,9 +135,10 @@ function CheckoutForm() {
   };
 
   return (
-    <div style={styles.container}>
+    <div style={styles.container} className="checkout-page">
       <motion.div
         style={styles.formContainer}
+        className="checkout-form"
         initial={{ opacity: 0, x: -50 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.5 }}
@@ -282,6 +283,7 @@ function CheckoutForm() {
 
       <motion.div
         style={styles.summaryContainer}
+        className="checkout-summary"
         initial={{ opacity: 0, x: 50 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.5, delay: 0.2 }}
