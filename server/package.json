@@ -1,0 +1,30 @@
+{
+  "name": "royalcellspot-server",
+  "version": "1.0.0",
+  "description": "Backend for Royal Cell Spot",
+  "main": "server.js",
+  "scripts": {
+    "start": "NODE_ENV=production node server",
+    "dev": "nodemon server",
+    "data:import": "node utils/seeder -i",
+    "data:destroy": "node utils/seeder -d"
+  },
+  "author": "Your Name",
+  "license": "MIT",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "colors": "^1.4.0",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.6",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.0",
+    "mongoose": "^7.0.0",
+    "morgan": "^1.10.0",
+    "nodemailer": "^8.0.5",
+    "twilio": "^5.13.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.22"
+  }
+}
