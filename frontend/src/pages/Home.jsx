@@ -110,8 +110,10 @@ function Home() {
         >
           <div style={styles.phoneMockup}>
             <div style={styles.phoneScreen}>
-              <span style={styles.phoneIcon}>📱</span>
-              <p style={styles.phoneText}>Latest Flagships</p>
+              <div style={styles.phoneImageBackground} />
+              <div style={styles.phoneLabelWrap}>
+                <p style={styles.phoneText}>Latest Flagships</p>
+              </div>
             </div>
           </div>
         </motion.div>
@@ -570,8 +572,8 @@ const styles = {
     alignItems: 'center',
   },
   phoneMockup: {
-    width: '300px',
-    height: '600px',
+    width: 'clamp(240px, 26vw, 300px)',
+    aspectRatio: '1 / 2',
     backgroundColor: '#1E293B',
     borderRadius: '40px',
     border: '3px solid rgba(59, 130, 246, 0.3)',
@@ -586,26 +588,50 @@ const styles = {
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-    justifyContent: 'center',
-    gap: '16px',
+    justifyContent: 'flex-end',
+    gap: '0',
+    padding: '18px 16px 16px',
+    overflow: 'hidden',
+    position: 'relative',
   },
-  phoneIcon: {
-    fontSize: '80px',
+  phoneImageBackground: {
+    position: 'absolute',
+    inset: 0,
+    backgroundImage: 'url(https://media.secure-mobiles.com/product-images/17XA2.1.responsive-lg.centre.png)',
+    backgroundRepeat: 'no-repeat',
+    backgroundPosition: 'center',
+    backgroundSize: 'auto 100%',
+    backgroundColor: 'rgba(59, 130, 246, 0.14)',
+  },
+  phoneLabelWrap: {
+    position: 'relative',
+    zIndex: 1,
+    width: '100%',
+    display: 'flex',
+    justifyContent: 'center',
+    paddingTop: '10px',
+  },
+  phoneImage: {
+    width: '100%',
+    maxWidth: '215px',
+    maxHeight: '58%',
+    height: 'auto',
+    objectFit: 'contain',
+    filter: 'drop-shadow(0 18px 32px rgba(0,0,0,0.22))',
+    flexShrink: 0,
   },
   phoneText: {
-    fontSize: '20px',
+    fontSize: '18px',
     fontWeight: '700',
     color: '#fff',
+    textAlign: 'center',
+    margin: 0,
   },
   marquee: {
     backgroundColor: '#FFFFFF',
     padding: '20px 0',
     overflow: 'hidden',
-    borderBottom: '1px solid #E2E8F0',
     borderTop: '1px solid #E2E8F0',
-  },
-  marqueeContent: {
-    display: 'flex',
     gap: '40px',
     whiteSpace: 'nowrap',
   },

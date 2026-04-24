@@ -6,16 +6,39 @@ const API_URL = import.meta.env.VITE_API_URL;
 
 const isMongoObjectId = (value) => /^[a-f\d]{24}$/i.test(String(value || '').trim());
 
+const normalizeProductShape = (product) => ({
+  ...product,
+  _id: product._id || product.id,
+  id: product.id || product._id,
+  image: product.image || getFirstImage(product.images) || '',
+  colors: Array.isArray(product.colors) ? product.colors : (product.colors ? [product.colors] : []),
+  storage: Array.isArray(product.storage) ? product.storage : (product.storage ? [product.storage] : []),
+});
+
+const getProductKey = (product) => {
+  const name = String(product?.name || '').trim().toLowerCase();
+  const brand = String(product?.brand || '').trim().toLowerCase();
+  const category = String(product?.category || '').trim().toLowerCase();
+
+  return `${brand}::${name}::${category}`;
+};
+
+const mergeProducts = (primaryProducts, fallbackProducts) => {
+  const merged = new Map();
+
+  [...fallbackProducts, ...primaryProducts].forEach((product) => {
+    const normalizedProduct = normalizeProductShape(product);
+    merged.set(getProductKey(normalizedProduct), normalizedProduct);
+  });
+
+  return Array.from(merged.values());
+};
+
 /**
  * Normalizes backend product data to include image field for ProductCard
  */
 const normalizeBackendProduct = (product) => {
-  return {
-    ...product,
-    image: product.images && product.images.length > 0 ? product.images[0] : '',
-    colors: product.colors || [],
-    storage: product.storage ? (Array.isArray(product.storage) ? product.storage : [product.storage]) : [],
-  };
+  return normalizeProductShape(product);
 };
 
 /**
@@ -27,14 +50,17 @@ export const getProducts = async () => {
     const response = await axios.get(`${API_URL}/products`);
     
     if (response.data.data && Array.isArray(response.data.data)) {
-      return response.data.data.map(normalizeBackendProduct);
+      return mergeProducts(
+        response.data.data.map(normalizeBackendProduct),
+        localProducts
+      );
     }
     
-    return [];
+    return localProducts.map(normalizeProductShape);
   } catch (apiError) {
     console.warn('Backend API unavailable, using local products as fallback:', apiError.message);
     // Fallback to local products
-    return localProducts;
+    return localProducts.map(normalizeProductShape);
   }
 };
 
