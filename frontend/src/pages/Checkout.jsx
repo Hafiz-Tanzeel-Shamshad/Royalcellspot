@@ -111,6 +111,8 @@ function CheckoutForm() {
         products: items.map(item => ({
           productId: item._id,
           quantity: item.quantity,
+          selectedColor: item.selectedColor || null,
+          selectedStorage: item.selectedStorage || null,
         })),
         paymentMethod,
       };
@@ -294,6 +296,8 @@ function CheckoutForm() {
             <img src={item.image} alt={item.name} style={styles.itemImage} />
             <div style={styles.itemDetails}>
               <p style={styles.itemName}>{item.name}</p>
+              {item.selectedColor && <p style={styles.itemMeta}>Color: {item.selectedColor}</p>}
+              {item.selectedStorage && <p style={styles.itemMeta}>Storage: {item.selectedStorage}</p>}
               <p style={styles.itemMeta}>Qty: {item.quantity}</p>
             </div>
             <p>${(item.price * item.quantity).toFixed(2)}</p>

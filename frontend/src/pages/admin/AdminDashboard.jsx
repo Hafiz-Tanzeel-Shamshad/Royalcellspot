@@ -62,6 +62,8 @@ const AdminDashboard = ({ setAdmin }) => {
       discountPrice: p?.discountPrice ?? '',
       stock: p?.stock ?? 0,
       imagesText: Array.isArray(p?.images) ? p.images.join(', ') : '',
+      colorsText: Array.isArray(p?.colors) ? p.colors.join(', ') : '',
+      storageText: Array.isArray(p?.storage) ? p.storage.join(', ') : '',
     });
   };
 
@@ -120,6 +122,14 @@ const AdminDashboard = ({ setAdmin }) => {
           .map((s) => s.trim())
           .filter(Boolean),
       };
+
+        // include colors and storage if provided
+        if (typeof editForm.colorsText === 'string') {
+          payload.colors = String(editForm.colorsText || '').split(',').map(s => s.trim()).filter(Boolean);
+        }
+        if (typeof editForm.storageText === 'string') {
+          payload.storage = String(editForm.storageText || '').split(',').map(s => s.trim()).filter(Boolean);
+        }
 
       if (discountNum !== undefined) {
         payload.discountPrice = discountNum;
@@ -282,52 +292,80 @@ const AdminDashboard = ({ setAdmin }) => {
           >
             <div style={styles.modal} onMouseDown={(e) => e.stopPropagation()}>
               <div style={styles.modalHeader}>
-                <h3 style={styles.modalTitle}>Edit Product</h3>
+                <div>
+                  <div style={styles.modalEyebrow}>Product Editor</div>
+                  <h3 style={styles.modalTitle}>Edit Product</h3>
+                  <div style={styles.modalSubtitle}>Update details, pricing, inventory, and variant options.</div>
+                </div>
                 <button type="button" onClick={cancelEdit} style={styles.iconButton} disabled={saving} aria-label="Close">
                   ×
                 </button>
               </div>
 
-              <div style={styles.formGrid}>
-                <label style={styles.label}>
-                  Name
-                  <input style={styles.input} name="name" value={editForm.name} onChange={handleEditChange} />
-                </label>
+              <div style={styles.modalBody}>
+                <div style={styles.modalHero}>
+                  <div style={styles.heroLabel}>Current Product</div>
+                  <div style={styles.heroTitle}>{editForm.name || 'Untitled product'}</div>
+                  <div style={styles.heroMeta}>{editForm.brand || '-'} • {editForm.category || '-'}</div>
+                </div>
 
-                <label style={styles.label}>
-                  Brand
-                  <input style={styles.input} name="brand" value={editForm.brand} onChange={handleEditChange} />
-                </label>
+                <div style={styles.sectionCard}>
+                  <div style={styles.sectionCardTitle}>Core Details</div>
+                  <div style={styles.formGrid}>
+                    <label style={styles.label}>
+                      Name
+                      <input style={styles.input} name="name" value={editForm.name} onChange={handleEditChange} />
+                    </label>
 
-                <label style={styles.label}>
-                  Category
-                  <input style={styles.input} name="category" value={editForm.category} onChange={handleEditChange} />
-                </label>
+                    <label style={styles.label}>
+                      Brand
+                      <input style={styles.input} name="brand" value={editForm.brand} onChange={handleEditChange} />
+                    </label>
 
-                <label style={styles.label}>
-                  Stock
-                  <input style={styles.input} type="number" name="stock" value={editForm.stock} onChange={handleEditChange} />
-                </label>
+                    <label style={styles.label}>
+                      Category
+                      <input style={styles.input} name="category" value={editForm.category} onChange={handleEditChange} />
+                    </label>
 
-                <label style={styles.label}>
-                  Price
-                  <input style={styles.input} type="number" name="price" value={editForm.price} onChange={handleEditChange} />
-                </label>
+                    <label style={styles.label}>
+                      Stock
+                      <input style={styles.input} type="number" name="stock" value={editForm.stock} onChange={handleEditChange} />
+                    </label>
 
-                <label style={styles.label}>
-                  Discount Price
-                  <input style={styles.input} type="number" name="discountPrice" value={editForm.discountPrice} onChange={handleEditChange} />
-                </label>
+                    <label style={styles.label}>
+                      Price
+                      <input style={styles.input} type="number" name="price" value={editForm.price} onChange={handleEditChange} />
+                    </label>
 
-                <label style={{ ...styles.label, gridColumn: '1 / -1' }}>
-                  Description
-                  <textarea style={styles.textarea} name="description" value={editForm.description} onChange={handleEditChange} />
-                </label>
+                    <label style={styles.label}>
+                      Discount Price
+                      <input style={styles.input} type="number" name="discountPrice" value={editForm.discountPrice} onChange={handleEditChange} />
+                    </label>
 
-                <label style={{ ...styles.label, gridColumn: '1 / -1' }}>
-                  Images (comma-separated)
-                  <input style={styles.input} name="imagesText" value={editForm.imagesText} onChange={handleEditChange} />
-                </label>
+                    <label style={{ ...styles.label, gridColumn: '1 / -1' }}>
+                      Description
+                      <textarea style={styles.textarea} name="description" value={editForm.description} onChange={handleEditChange} />
+                    </label>
+                  </div>
+                </div>
+
+                <div style={styles.sectionCard}>
+                  <div style={styles.sectionCardTitle}>Media & Variants</div>
+                  <div style={styles.formStack}>
+                    <label style={styles.label}>
+                      Images (comma-separated)
+                      <input style={styles.input} name="imagesText" value={editForm.imagesText} onChange={handleEditChange} />
+                    </label>
+                    <label style={styles.label}>
+                      Colors (comma-separated)
+                      <input style={styles.input} name="colorsText" value={editForm.colorsText} onChange={handleEditChange} />
+                    </label>
+                    <label style={styles.label}>
+                      Storage options (comma-separated)
+                      <input style={styles.input} name="storageText" value={editForm.storageText} onChange={handleEditChange} />
+                    </label>
+                  </div>
+                </div>
               </div>
 
               <div style={styles.modalFooter}>
@@ -546,21 +584,22 @@ const styles = {
   modalOverlay: {
     position: 'fixed',
     inset: 0,
-    backgroundColor: 'rgba(15, 23, 42, 0.55)',
+    backgroundColor: 'rgba(15, 23, 42, 0.72)',
+    backdropFilter: 'blur(12px)',
     display: 'flex',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     justifyContent: 'center',
-    padding: '18px',
+    padding: '96px 24px 24px',
     zIndex: 1000,
     overflowY: 'auto',
   },
   modal: {
     width: '100%',
-    maxWidth: '780px',
-    background: '#fff',
-    borderRadius: '14px',
-    border: '1px solid #e5e7eb',
-    boxShadow: '0 22px 60px rgba(2, 6, 23, 0.35)',
+    maxWidth: '920px',
+    background: 'linear-gradient(180deg, #ffffff 0%, #f8fafc 100%)',
+    borderRadius: '24px',
+    border: '1px solid rgba(148, 163, 184, 0.25)',
+    boxShadow: '0 30px 80px rgba(2, 6, 23, 0.35)',
     overflow: 'hidden',
   },
   confirmModal: {
@@ -576,93 +615,158 @@ const styles = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
-    padding: '14px 16px',
-    borderBottom: '1px solid #eef2f7',
-    background: '#f8fafc',
+    padding: '22px 24px',
+    borderBottom: '1px solid rgba(148, 163, 184, 0.18)',
+    background: 'linear-gradient(135deg, rgba(15, 23, 42, 0.98) 0%, rgba(30, 41, 59, 0.96) 100%)',
+    color: '#fff',
+  },
+  modalEyebrow: {
+    fontSize: '11px',
+    fontWeight: 800,
+    letterSpacing: '0.18em',
+    textTransform: 'uppercase',
+    color: 'rgba(255, 255, 255, 0.62)',
+    marginBottom: '6px',
   },
   modalTitle: {
     margin: 0,
-    fontSize: '16px',
-    fontWeight: 700,
+    fontSize: '22px',
+    fontWeight: 800,
+    letterSpacing: '-0.03em',
+    color: '#fff',
+  },
+  modalSubtitle: {
+    marginTop: '8px',
+    fontSize: '13px',
+    color: 'rgba(255, 255, 255, 0.72)',
   },
   iconButton: {
-    width: '34px',
-    height: '34px',
-    borderRadius: '8px',
-    border: '1px solid #e5e7eb',
-    background: '#fff',
+    width: '40px',
+    height: '40px',
+    borderRadius: '12px',
+    border: '1px solid rgba(255, 255, 255, 0.18)',
+    background: 'rgba(255, 255, 255, 0.08)',
+    color: '#fff',
     cursor: 'pointer',
-    fontSize: '20px',
+    fontSize: '22px',
     lineHeight: '20px',
+  },
+  modalBody: {
+    padding: '24px',
+    display: 'grid',
+    gap: '18px',
+  },
+  modalHero: {
+    borderRadius: '20px',
+    padding: '18px 20px',
+    background: 'linear-gradient(135deg, #eff6ff 0%, #f8fafc 100%)',
+    border: '1px solid rgba(59, 130, 246, 0.12)',
+  },
+  heroLabel: {
+    fontSize: '11px',
+    fontWeight: 800,
+    letterSpacing: '0.14em',
+    textTransform: 'uppercase',
+    color: '#2563eb',
+    marginBottom: '8px',
+  },
+  heroTitle: {
+    fontSize: '20px',
+    fontWeight: 800,
+    color: '#0f172a',
+    letterSpacing: '-0.02em',
+    marginBottom: '6px',
+  },
+  heroMeta: {
+    fontSize: '13px',
+    color: '#475569',
+  },
+  sectionCard: {
+    borderRadius: '18px',
+    backgroundColor: '#fff',
+    border: '1px solid #e2e8f0',
+    boxShadow: '0 12px 30px rgba(15, 23, 42, 0.04)',
+    padding: '18px',
+  },
+  sectionCardTitle: {
+    fontSize: '13px',
+    fontWeight: 800,
+    color: '#0f172a',
+    marginBottom: '14px',
+    textTransform: 'uppercase',
+    letterSpacing: '0.08em',
+  },
+  formStack: {
+    display: 'grid',
+    gap: '12px',
   },
   modalFooter: {
     display: 'flex',
     justifyContent: 'flex-end',
-    gap: '10px',
-    padding: '14px 16px',
-    borderTop: '1px solid #eef2f7',
-    background: '#fafafa',
-  },
-  confirmBody: {
-    padding: '16px',
-  },
-  confirmText: {
-    margin: 0,
-    fontSize: '14px',
-    color: '#0f172a',
-  },
-  confirmSubtext: {
-    margin: '8px 0 0',
-    fontSize: '13px',
-    color: '#475569',
+    gap: '12px',
+    padding: '18px 24px 24px',
+    borderTop: '1px solid rgba(148, 163, 184, 0.18)',
+    background: '#fff',
   },
   dangerButton: {
-    padding: '8px 12px',
-    backgroundColor: '#dc2626',
+    padding: '12px 18px',
+    background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
     color: '#fff',
     border: 'none',
-    borderRadius: '6px',
+    borderRadius: '12px',
     cursor: 'pointer',
+    fontWeight: 800,
+    boxShadow: '0 10px 20px rgba(220, 38, 38, 0.18)',
   },
   cancelButton: {
-    padding: '8px 12px',
+    padding: '12px 18px',
     backgroundColor: '#fff',
-    border: '1px solid #ddd',
-    borderRadius: '6px',
+    border: '1px solid #dbe3ee',
+    borderRadius: '12px',
     cursor: 'pointer',
+    fontWeight: 700,
+    color: '#0f172a',
   },
   saveButton: {
-    padding: '8px 12px',
-    backgroundColor: '#16a34a',
+    padding: '12px 18px',
+    background: 'linear-gradient(135deg, #2563eb 0%, #7c3aed 100%)',
     color: '#fff',
     border: 'none',
-    borderRadius: '6px',
+    borderRadius: '12px',
     cursor: 'pointer',
+    fontWeight: 800,
+    boxShadow: '0 10px 20px rgba(37, 99, 235, 0.18)',
   },
   formGrid: {
     display: 'grid',
     gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
-    gap: '12px',
+    gap: '14px',
   },
   label: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '6px',
-    fontSize: '14px',
+    gap: '8px',
+    fontSize: '13px',
+    fontWeight: 700,
+    color: '#334155',
   },
   input: {
-    padding: '10px',
-    borderRadius: '10px',
-    border: '1px solid #d1d5db',
+    padding: '12px 14px',
+    borderRadius: '12px',
+    border: '1px solid #dbe3ee',
     outline: 'none',
+    backgroundColor: '#fff',
+    boxShadow: 'inset 0 1px 2px rgba(15, 23, 42, 0.04)',
   },
   textarea: {
-    padding: '10px',
-    borderRadius: '10px',
-    border: '1px solid #d1d5db',
-    minHeight: '90px',
+    padding: '12px 14px',
+    borderRadius: '12px',
+    border: '1px solid #dbe3ee',
+    minHeight: '110px',
     resize: 'vertical',
     outline: 'none',
+    backgroundColor: '#fff',
+    boxShadow: 'inset 0 1px 2px rgba(15, 23, 42, 0.04)',
   },
   logoutButton: {
     padding: '10px 20px',

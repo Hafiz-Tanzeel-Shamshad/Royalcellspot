@@ -110,6 +110,8 @@ function OrderConfirmation() {
                     )}
                     <div style={styles.itemInfo}>
                       <div style={styles.itemName}>{p.name}</div>
+                      {p.selectedColor && <div style={styles.itemMeta}>Color: {p.selectedColor}</div>}
+                      {p.selectedStorage && <div style={styles.itemMeta}>Storage: {p.selectedStorage}</div>}
                       <div style={styles.itemMeta}>Qty: {p.quantity}</div>
                     </div>
                     <div style={styles.itemPrice}>${Number(p.price || 0).toLocaleString()}</div>
@@ -143,6 +145,7 @@ const styles = {
     maxWidth: '1000px',
     margin: '0 auto',
     padding: '32px 16px',
+    overflowX: 'hidden',
   },
   card: {
     background: '#fff',
@@ -234,6 +237,7 @@ const styles = {
     gap: '10px',
     paddingBottom: '10px',
     borderBottom: '1px solid #f3f4f6',
+    minWidth: 0,
   },
   itemImg: {
     width: '44px',
@@ -251,6 +255,7 @@ const styles = {
   },
   itemInfo: {
     flex: 1,
+    minWidth: 0,
   },
   itemName: {
     fontWeight: 700,
@@ -299,5 +304,62 @@ const styles = {
     cursor: 'pointer',
   },
 };
+
+if (typeof window !== 'undefined') {
+  const handleResize = () => {
+    if (window.innerWidth <= 768) {
+      styles.container.padding = '16px 12px';
+      styles.card.padding = '14px';
+      styles.card.borderRadius = '12px';
+      styles.headerRow.flexDirection = 'column';
+      styles.headerRow.alignItems = 'flex-start';
+      styles.badge.width = '44px';
+      styles.badge.height = '44px';
+      styles.badge.fontSize = '18px';
+      styles.h1.fontSize = '20px';
+      styles.h2.fontSize = '16px';
+      styles.metaRow.fontSize = '13px';
+      styles.metaRow.flexDirection = 'column';
+      styles.metaRow.alignItems = 'flex-start';
+      styles.metaRow.gap = '6px';
+      styles.grid.gridTemplateColumns = '1fr';
+      styles.grid.gap = '14px';
+      styles.section.padding = '12px';
+      styles.kv.flexDirection = 'column';
+      styles.kv.alignItems = 'flex-start';
+      styles.v.textAlign = 'left';
+      styles.itemRow.alignItems = 'flex-start';
+      styles.itemRow.flexWrap = 'wrap';
+      styles.itemRow.gap = '8px';
+      styles.itemInfo.width = '100%';
+      styles.itemPrice.marginLeft = 'auto';
+      styles.itemPrice.width = '100%';
+      styles.itemPrice.textAlign = 'right';
+      styles.actions.flexDirection = 'column';
+      styles.actions.alignItems = 'stretch';
+      styles.buttonPrimary.width = '100%';
+      styles.buttonSecondary.width = '100%';
+    }
+    if (window.innerWidth <= 480) {
+      styles.container.padding = '12px 10px';
+      styles.card.borderRadius = '10px';
+      styles.container.maxWidth = '100%';
+      styles.state.padding = '36px 12px';
+      styles.metaRow.fontSize = '12px';
+      styles.itemName.fontSize = '13px';
+      styles.itemMeta.fontSize = '11px';
+      styles.itemPrice.fontSize = '13px';
+      styles.itemImg.width = '40px';
+      styles.itemImg.height = '40px';
+      styles.itemImgPlaceholder.width = '40px';
+      styles.itemImgPlaceholder.height = '40px';
+      styles.buttonPrimary.padding = '12px';
+      styles.buttonSecondary.padding = '12px';
+    }
+  };
+
+  handleResize();
+  window.addEventListener('resize', handleResize);
+}
 
 export default OrderConfirmation;

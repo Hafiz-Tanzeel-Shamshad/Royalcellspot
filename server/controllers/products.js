@@ -21,7 +21,18 @@ exports.getProduct = asyncHandler(async (req, res, next) => {
     );
   }
 
-  res.status(200).json({ success: true, data: product });
+  // Ensure response includes storage and colors for backward compatibility
+  const obj = product.toObject ? product.toObject() : product;
+  if ((!obj.storage || obj.storage.length === 0) && obj.specs && obj.specs.storage) {
+    if (typeof obj.specs.storage === 'string') {
+      obj.storage = obj.specs.storage.split(',').map(s => s.trim()).filter(Boolean);
+    }
+  }
+  if (!obj.colors) {
+    obj.colors = obj.colors || [];
+  }
+
+  res.status(200).json({ success: true, data: obj });
 });
 
 // @desc      Create new product

@@ -79,6 +79,8 @@ exports.createOrder = asyncHandler(async (req, res, next) => {
       price: (product.discountPrice || product.price),
       quantity: item.quantity,
       image: product.images[0] || '',
+      selectedColor: item.selectedColor || null,
+      selectedStorage: item.selectedStorage || null,
     });
 
     // Decrease stock
@@ -136,7 +138,9 @@ exports.createOrder = asyncHandler(async (req, res, next) => {
     const itemsText = order.products
       .map((p, idx) => {
         const lineTotal = Number(p.price) * Number(p.quantity);
-        return `${idx + 1}. ${p.name} x${p.quantity} @ ${p.price} = ${lineTotal}`;
+        const colorText = p.selectedColor ? ` | Color: ${p.selectedColor}` : '';
+        const storageText = p.selectedStorage ? ` | Storage: ${p.selectedStorage}` : '';
+        return `${idx + 1}. ${p.name} x${p.quantity} @ ${p.price}${colorText}${storageText} = ${lineTotal}`;
       })
       .join('\n');
 

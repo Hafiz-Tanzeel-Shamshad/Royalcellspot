@@ -4,6 +4,8 @@ import localProducts from '../data/products';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
+const isMongoObjectId = (value) => /^[a-f\d]{24}$/i.test(String(value || '').trim());
+
 /**
  * Normalizes backend product data to include image field for ProductCard
  */
@@ -56,9 +58,20 @@ export const getProductsByCategory = async (category) => {
  * Fetches a single product by ID from backend
  */
 export const getProductById = async (id) => {
+  const normalizedId = String(id || '').trim();
+
+  // Legacy local products use numeric ids; avoid calling the MongoDB endpoint
+  // for those values because Product.findById() will throw a CastError.
+  if (!isMongoObjectId(normalizedId)) {
+    const localProduct = localProducts.find(p =>
+      String(p._id) === normalizedId || String(p.id) === normalizedId
+    );
+    return localProduct || null;
+  }
+
   try {
     // Try to fetch from backend using the ID
-    const response = await axios.get(`${API_URL}/products/${id}`);
+    const response = await axios.get(`${API_URL}/products/${normalizedId}`);
     
     if (response.data.data) {
       return normalizeBackendProduct(response.data.data);
@@ -66,11 +79,11 @@ export const getProductById = async (id) => {
     
     return null;
   } catch (apiError) {
-    console.error(`Error fetching product with id ${id}:`, apiError.message);
+    console.error(`Error fetching product with id ${normalizedId}:`, apiError.message);
     
     // Fallback to local products - check both _id and id fields
     const localProduct = localProducts.find(p => 
-      String(p._id) === String(id) || String(p.id) === String(id)
+      String(p._id) === normalizedId || String(p.id) === normalizedId
     );
     
     return localProduct || null;
