@@ -42,6 +42,12 @@ function Navbar() {
     { to: '/products', label: 'Shop' },
   ];
 
+  const mobileCategoryLinks = [
+    { to: '/products?brand=apple', label: 'Apple' },
+    { to: '/products?brand=google', label: 'Google' },
+    { to: '/products?brand=samsung', label: 'Samsung' },
+  ];
+
   const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(email || '').trim());
 
   const handleCartClick = (e) => {
@@ -185,6 +191,16 @@ function Navbar() {
               style={styles.mobileMenu}
             >
               {navLinks.map(link => (
+                <Link
+                  key={link.to}
+                  to={link.to}
+                  style={styles.mobileNavLink}
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  {link.label}
+                </Link>
+              ))}
+              {mobileCategoryLinks.map(link => (
                 <Link
                   key={link.to}
                   to={link.to}

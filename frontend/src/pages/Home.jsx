@@ -21,9 +21,41 @@ function Home() {
   }, []);
 
   const brands = [
-    { id: 'Apple', label: 'Apple', icon: '🍎', gradient: 'linear-gradient(135deg, #1a1a1a 0%, #333 100%)' },
-    { id: 'Samsung', label: 'Samsung', icon: '📱', gradient: 'linear-gradient(135deg, #1a237e 0%, #42a5f5 100%)' },
-    { id: 'Google', label: 'Google', icon: '🔍', gradient: 'linear-gradient(135deg, #ea4335 0%, #4285f4 100%)' },
+    {
+      id: 'Apple',
+      label: 'Apple',
+      icon: (
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M15.6 4.09c.97-1.18 1.63-2.8 1.46-4.41-1.4.06-3.09.93-4.1 2.1-.91 1.04-1.71 2.69-1.49 4.27 1.58.12 3.17-.81 4.13-1.96Zm3.46 4.86c-1.6-.95-3.04-1.28-4.32-1.28-1.72 0-2.99.72-4.02.72-1.06 0-2.14-.7-3.7-.7-1.63 0-3.36.96-4.46 2.61-1.55 2.33-1.28 6.72 1.23 10.37.9 1.32 2.1 2.8 3.67 2.82 1.4.03 1.85-.89 3.71-.9 1.86-.01 2.27.92 3.67.89 1.58-.02 2.86-1.67 3.76-2.99.64-.95.88-1.43 1.38-2.56-3.66-1.39-4.24-6.62-.92-8.98Zm-5.04-4.17c.87 0 1.95-.61 2.6-1.42.59-.74 1.02-1.76.99-2.79-1 .08-2.19.68-2.89 1.52-.63.75-1.16 1.75-.7 2.69Z" />
+        </svg>
+      ),
+      gradient: 'linear-gradient(135deg, #1a1a1a 0%, #333 100%)'
+    },
+    {
+      id: 'Samsung',
+      label: 'Samsung',
+      icon: (
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <rect x="5" y="2.5" width="14" height="19" rx="3" />
+          <path d="M9 6h6" />
+          <circle cx="12" cy="18.2" r="0.8" fill="currentColor" stroke="none" />
+        </svg>
+      ),
+      gradient: 'linear-gradient(135deg, #1a237e 0%, #42a5f5 100%)'
+    },
+    {
+      id: 'Google',
+      label: 'Google',
+      icon: (
+        <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M21.8 12.3c0-.8-.1-1.4-.2-2H12v3.8h5.5c-.2 1-.8 2.4-2.2 3.3l-.1.1 3.3 2.6.2 0c1.9-1.8 3.1-4.4 3.1-7.8Z" fill="#4285F4" />
+          <path d="M12 22c2.7 0 5-.9 6.7-2.5l-3.2-2.5c-.9.6-2 1-3.5 1-2.7 0-4.9-1.8-5.7-4.2l-.1 0-3.5 2.7 0 .1C4.8 19.4 8.1 22 12 22Z" fill="#34A853" />
+          <path d="M6.3 13.8c-.2-.6-.3-1.2-.3-1.8s.1-1.2.3-1.8l0-.1-3.5-2.7-.1 0A10 10 0 0 0 2 12c0 1.6.4 3.1 1 4.5l3.3-2.7Z" fill="#FBBC05" />
+          <path d="M12 5.9c1.5 0 2.8.5 3.8 1.5l2.8-2.8C17 2.9 14.7 2 12 2 8.1 2 4.8 4.6 3 8l3.3 2.7c.8-2.4 3-4.8 5.7-4.8Z" fill="#EA4335" />
+        </svg>
+      ),
+      gradient: 'linear-gradient(135deg, #ea4335 0%, #4285f4 100%)'
+    },
   ];
 
   const filteredProducts = selectedBrand === 'all' 
@@ -246,7 +278,14 @@ function Home() {
           <section style={styles.brandSection}>
             <div style={styles.sectionHeader}>
               <div>
-                <h2 style={styles.sectionTitle}>🍎 Apple iPhones</h2>
+                <h2 style={styles.sectionTitle}>
+                  <span style={styles.sectionTitleIcon} aria-hidden="true">
+                    <svg width="30" height="30" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M15.6 4.09c.97-1.18 1.63-2.8 1.46-4.41-1.4.06-3.09.93-4.1 2.1-.91 1.04-1.71 2.69-1.49 4.27 1.58.12 3.17-.81 4.13-1.96Zm3.46 4.86c-1.6-.95-3.04-1.28-4.32-1.28-1.72 0-2.99.72-4.02.72-1.06 0-2.14-.7-3.7-.7-1.63 0-3.36.96-4.46 2.61-1.55 2.33-1.28 6.72 1.23 10.37.9 1.32 2.1 2.8 3.67 2.82 1.4.03 1.85-.89 3.71-.9 1.86-.01 2.27.92 3.67.89 1.58-.02 2.86-1.67 3.76-2.99.64-.95.88-1.43 1.38-2.56-3.66-1.39-4.24-6.62-.92-8.98Zm-5.04-4.17c.87 0 1.95-.61 2.6-1.42.59-.74 1.02-1.76.99-2.79-1 .08-2.19.68-2.89 1.52-.63.75-1.16 1.75-.7 2.69Z" />
+                    </svg>
+                  </span>
+                  Apple iPhones
+                </h2>
                 <p style={styles.sectionSubtitle}>Latest iPhone models with Apple warranty</p>
               </div>
               <Link to="/products?brand=apple" style={styles.viewAll}>View All →</Link>
@@ -311,7 +350,16 @@ function Home() {
           <section style={styles.brandSection}>
             <div style={styles.sectionHeader}>
               <div>
-                <h2 style={styles.sectionTitle}>📱 Samsung Galaxy</h2>
+                <h2 style={styles.sectionTitle}>
+                  <span style={{ ...styles.sectionTitleIcon, color: '#1E40AF' }} aria-hidden="true">
+                    <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <rect x="5" y="2.5" width="14" height="19" rx="3" />
+                      <path d="M9 6h6" />
+                      <circle cx="12" cy="18.2" r="0.8" fill="currentColor" stroke="none" />
+                    </svg>
+                  </span>
+                  Samsung Galaxy
+                </h2>
                 <p style={styles.sectionSubtitle}>Premium Android smartphones</p>
               </div>
               <Link to="/products?brand=samsung" style={styles.viewAll}>View All →</Link>
@@ -335,7 +383,17 @@ function Home() {
           <section style={styles.brandSection}>
             <div style={styles.sectionHeader}>
               <div>
-                <h2 style={styles.sectionTitle}>🔍 Google Pixel</h2>
+                <h2 style={styles.sectionTitle}>
+                  <span style={{ ...styles.sectionTitleIcon, color: '#ea4335' }} aria-hidden="true">
+                    <svg width="30" height="30" viewBox="0 0 24 24" aria-hidden="true">
+                      <path d="M21.8 12.3c0-.8-.1-1.4-.2-2H12v3.8h5.5c-.2 1-.8 2.4-2.2 3.3l-.1.1 3.3 2.6.2 0c1.9-1.8 3.1-4.4 3.1-7.8Z" fill="#4285F4" />
+                      <path d="M12 22c2.7 0 5-.9 6.7-2.5l-3.2-2.5c-.9.6-2 1-3.5 1-2.7 0-4.9-1.8-5.7-4.2l-.1 0-3.5 2.7 0 .1C4.8 19.4 8.1 22 12 22Z" fill="#34A853" />
+                      <path d="M6.3 13.8c-.2-.6-.3-1.2-.3-1.8s.1-1.2.3-1.8l0-.1-3.5-2.7-.1 0A10 10 0 0 0 2 12c0 1.6.4 3.1 1 4.5l3.3-2.7Z" fill="#FBBC05" />
+                      <path d="M12 5.9c1.5 0 2.8.5 3.8 1.5l2.8-2.8C17 2.9 14.7 2 12 2 8.1 2 4.8 4.6 3 8l3.3 2.7c.8-2.4 3-4.8 5.7-4.8Z" fill="#EA4335" />
+                    </svg>
+                  </span>
+                  Google Pixel
+                </h2>
                 <p style={styles.sectionSubtitle}>Pure Android experience with AI features</p>
               </div>
               <Link to="/products?brand=google" style={styles.viewAll}>View All →</Link>
@@ -690,6 +748,17 @@ const styles = {
     color: '#0F172A',
     marginBottom: '8px',
     letterSpacing: '-1px',
+    display: 'flex',
+    alignItems: 'center',
+  },
+  sectionTitleIcon: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '40px',
+    height: '40px',
+    marginRight: '10px',
+    flexShrink: 0,
   },
   sectionSubtitle: {
     fontSize: '16px',
@@ -711,9 +780,15 @@ const styles = {
     color: '#0F172A',
   },
   brandIcon: {
-    fontSize: '48px',
-    display: 'block',
-    marginBottom: '16px',
+    width: '48px',
+    height: '48px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    margin: '0 auto 16px',
+    borderRadius: '16px',
+    backgroundColor: 'rgba(255, 255, 255, 0.12)',
+    color: '#0F172A',
   },
   brandName: {
     fontSize: '20px',

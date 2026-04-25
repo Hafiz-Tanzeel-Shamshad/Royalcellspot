@@ -173,7 +173,7 @@ function CheckoutForm() {
             <input
               type="tel"
               name="phone"
-              placeholder="Phone Number (e.g., +923001234567)"
+              placeholder="Phone Number (e.g., +1 202 555 0143)"
               style={styles.input}
               value={formData.phone}
               onChange={handleChange}

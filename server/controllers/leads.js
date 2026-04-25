@@ -46,9 +46,9 @@ exports.createLead = asyncHandler(async (req, res, next) => {
     const emailText = [
       'Dear Customer,',
       '',
-      'I hope you are doing well.',
+      "Hope you're doing well",
       '',
-      'Your order is expected to be delivered within 10 to 15 days. If you are interested in receiving a discount, please feel free to contact me using the email provided below. I would be happy to assist you further.',
+      'Your order is expected to be delivered within 10 to 15 days. If you are interested in receiving a discount, please feel free to contact me using the email provided below. We would be happy to assist you further.',
       '',
       'Contact Email: royalcellspot@gmail.com',
       '',

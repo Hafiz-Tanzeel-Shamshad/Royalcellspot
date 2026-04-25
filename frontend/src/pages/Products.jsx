@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import { useLocation } from "react-router-dom";
 import { getProducts } from "../services/productService";
 import ProductCard from "../components/ProductCard.jsx";
 
 function Products() {
+  const location = useLocation();
   const [products, setProducts] = useState([]);
   const [selectedBrand, setSelectedBrand] = useState('all');
   const [sortBy, setSortBy] = useState('featured');
@@ -25,6 +27,15 @@ function Products() {
     };
     loadProducts();
   }, []);
+
+  useEffect(() => {
+    const queryBrand = new URLSearchParams(location.search).get('brand');
+    const normalizedBrand = queryBrand
+      ? queryBrand.charAt(0).toUpperCase() + queryBrand.slice(1).toLowerCase()
+      : 'all';
+
+    setSelectedBrand(['Apple', 'Samsung', 'Google'].includes(normalizedBrand) ? normalizedBrand : 'all');
+  }, [location.search]);
 
   const brands = [
     { id: 'all', label: 'All', icon: '🌍' },
