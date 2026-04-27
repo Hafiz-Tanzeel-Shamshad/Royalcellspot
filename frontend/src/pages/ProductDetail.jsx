@@ -87,7 +87,17 @@ function ProductDetail() {
 
     setLeadSaving(true);
     try {
-      await createLead({ email, phone, source: "buy_now" });
+      await createLead({
+        email,
+        phone,
+        source: "buy_now",
+        items: [{
+          name: product.name,
+          quantity,
+          selectedColor,
+          selectedStorage,
+        }],
+      });
       setLead({ email, phone });
       setShowLeadModal(false);
 

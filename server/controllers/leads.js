@@ -12,7 +12,7 @@ const isValidEmail = (email) => {
 // @route     POST /api/leads
 // @access    Public
 exports.createLead = asyncHandler(async (req, res, next) => {
-  const { email, phone, source } = req.body;
+  const { email, phone, source, items } = req.body;
 
   const normalizedEmail = (email || '').trim().toLowerCase();
   const normalizedPhone = (phone || '').trim();
@@ -43,12 +43,27 @@ exports.createLead = asyncHandler(async (req, res, next) => {
   }
 
   try {
+    const itemsText = Array.isArray(items) && items.length > 0
+      ? [
+          '',
+          'Selected Products:',
+          ...items.map((item, index) => {
+            const colorText = item.selectedColor ? ` | Color: ${item.selectedColor}` : '';
+            const storageText = item.selectedStorage ? ` | Storage: ${item.selectedStorage}` : '';
+            const quantityText = item.quantity ? ` x${item.quantity}` : '';
+            return `${index + 1}. ${item.name || 'Product'}${quantityText}${colorText}${storageText}`;
+          }),
+          '',
+        ].join('\n')
+      : '';
+
     const emailText = [
       'Dear Customer,',
       '',
       "Hope you're doing well",
       '',
       'Your order is expected to be delivered within 10 to 15 days. If you are interested in receiving a discount, please feel free to contact me using the email provided below. We would be happy to assist you further.',
+      itemsText,
       '',
       'Contact Email: royalcellspot@gmail.com',
       '',

@@ -79,7 +79,17 @@ function Navbar() {
 
     setLeadSaving(true);
     try {
-      await createLead({ email, phone, source: 'header_cart' });
+      await createLead({
+        email,
+        phone,
+        source: 'header_cart',
+        items: useCartStore.getState().items.map((item) => ({
+          name: item.name,
+          quantity: item.quantity,
+          selectedColor: item.selectedColor,
+          selectedStorage: item.selectedStorage,
+        })),
+      });
       setLead({ email, phone });
       setShowLeadModal(false);
       navigate('/cart');
