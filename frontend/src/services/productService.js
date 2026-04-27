@@ -15,25 +15,6 @@ const normalizeProductShape = (product) => ({
   storage: Array.isArray(product.storage) ? product.storage : (product.storage ? [product.storage] : []),
 });
 
-const getProductKey = (product) => {
-  const name = String(product?.name || '').trim().toLowerCase();
-  const brand = String(product?.brand || '').trim().toLowerCase();
-  const category = String(product?.category || '').trim().toLowerCase();
-
-  return `${brand}::${name}::${category}`;
-};
-
-const mergeProducts = (primaryProducts, fallbackProducts) => {
-  const merged = new Map();
-
-  [...fallbackProducts, ...primaryProducts].forEach((product) => {
-    const normalizedProduct = normalizeProductShape(product);
-    merged.set(getProductKey(normalizedProduct), normalizedProduct);
-  });
-
-  return Array.from(merged.values());
-};
-
 /**
  * Normalizes backend product data to include image field for ProductCard
  */
@@ -41,21 +22,27 @@ const normalizeBackendProduct = (product) => {
   return normalizeProductShape(product);
 };
 
+const fetchBackendProducts = async () => {
+  const response = await axios.get(`${API_URL}/products?limit=1000`);
+
+  if (response.data.data && Array.isArray(response.data.data)) {
+    return response.data.data.map(normalizeBackendProduct);
+  }
+
+  return [];
+};
+
 /**
  * Fetches products from backend API (primary source)
- * Uses local products as fallback only if API is unavailable
+ * Uses local products only if the API is unavailable
  */
 export const getProducts = async () => {
   try {
-    const response = await axios.get(`${API_URL}/products`);
-    
-    if (response.data.data && Array.isArray(response.data.data)) {
-      return mergeProducts(
-        response.data.data.map(normalizeBackendProduct),
-        localProducts
-      );
+    const backendProducts = await fetchBackendProducts();
+    if (backendProducts.length > 0) {
+      return backendProducts;
     }
-    
+
     return localProducts.map(normalizeProductShape);
   } catch (apiError) {
     console.warn('Backend API unavailable, using local products as fallback:', apiError.message);
@@ -86,19 +73,28 @@ export const getProductsByCategory = async (category) => {
 export const getProductById = async (id) => {
   const normalizedId = String(id || '').trim();
 
-  // Legacy local products use numeric ids; avoid calling the MongoDB endpoint
-  // for those values because Product.findById() will throw a CastError.
-  if (!isMongoObjectId(normalizedId)) {
-    const localProduct = localProducts.find(p =>
-      String(p._id) === normalizedId || String(p.id) === normalizedId
-    );
-    return localProduct || null;
-  }
-
   try {
-    // Try to fetch from backend using the ID
+    // Numeric legacy URLs (for example /product/9) do not map to MongoDB ids.
+    // Resolve them against the full DB-backed list so old links keep working.
+    if (!isMongoObjectId(normalizedId)) {
+      const legacyIndex = Number(normalizedId);
+      if (Number.isInteger(legacyIndex) && legacyIndex > 0) {
+        const backendProducts = await fetchBackendProducts();
+        const legacyProduct = backendProducts[legacyIndex - 1];
+        if (legacyProduct) {
+          return legacyProduct;
+        }
+      }
+
+      const localProduct = localProducts.find(p =>
+        String(p._id) === normalizedId || String(p.id) === normalizedId
+      );
+      return localProduct || null;
+    }
+
+    // Try to fetch from backend using the MongoDB id
     const response = await axios.get(`${API_URL}/products/${normalizedId}`);
-    
+
     if (response.data.data) {
       return normalizeBackendProduct(response.data.data);
     }
