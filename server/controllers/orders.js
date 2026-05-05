@@ -108,16 +108,13 @@ exports.createOrder = asyncHandler(async (req, res, next) => {
     const trackingUrl = `${frontendBaseUrl}/order-confirmation/${order.orderId}`;
 
     const smsMessage = [
-      'Order Confirmed! 🧾',
+      'Order Confirmed!',
       '',
       `Order ID: ${order.orderId}`,
       '',
-      'Track your order:',
-      trackingUrl,
+      'Delivery in 10 days.',
       '',
-      'Your checkout was successful. You will receive your product within 10 business days.',
-      '',
-      'Thank you for shopping with us! We appreciate your trust and look forward to serving you again.',
+      'Thank you for shopping with us!',
     ].join('\n');
 
     const smsResult = await sendSMS(order.customer.phone, smsMessage);

@@ -1,4 +1,4 @@
-const twilio = require('twilio');
+const https = require('https');
 
 const isValidE164Phone = (phone) => {
   if (!phone) return false;
@@ -41,30 +41,95 @@ const normalizePhoneToE164 = (phone) => {
   return raw;
 };
 
-let cachedClient;
-
-const getTwilioClient = () => {
-  if (cachedClient) return cachedClient;
-
-  const { TWILIO_SID, TWILIO_AUTH_TOKEN } = process.env;
-
-  if (!TWILIO_SID || !TWILIO_AUTH_TOKEN) {
-    return null;
-  }
-
-  cachedClient = twilio(TWILIO_SID, TWILIO_AUTH_TOKEN);
-  return cachedClient;
+const isValidLifetimePhone = (phone) => {
+  if (!phone) return false;
+  return /^92\d{10}$/.test(String(phone).trim());
 };
 
+const normalizePhoneToLifetime = (phone) => {
+  const raw = String(phone || '').trim();
+  if (!raw) return '';
+
+  if (raw.includes(',')) {
+    return raw
+      .split(',')
+      .map((entry) => normalizePhoneToLifetime(entry))
+      .filter(Boolean)
+      .join(',');
+  }
+
+  if (isValidE164Phone(raw)) {
+    return raw.replace(/^\+/, '');
+  }
+
+  const digitsOnly = raw.replace(/[\s\-()]/g, '');
+
+  if (/^03\d{9}$/.test(digitsOnly)) {
+    return `92${digitsOnly.slice(1)}`;
+  }
+
+  if (/^3\d{9}$/.test(digitsOnly)) {
+    return `92${digitsOnly}`;
+  }
+
+  if (/^92\d{10}$/.test(digitsOnly)) {
+    return digitsOnly;
+  }
+
+  return digitsOnly;
+};
+
+const LIFETIMESMS_BASE_URL = 'https://lifetimesms.com/json';
+
+const postLifetimeSms = (params) =>
+  new Promise((resolve, reject) => {
+    const postData = params.toString();
+    const request = https.request(
+      LIFETIMESMS_BASE_URL,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'Content-Length': Buffer.byteLength(postData),
+        },
+      },
+      (response) => {
+        let data = '';
+        response.on('data', (chunk) => {
+          data += chunk;
+        });
+        response.on('end', () => {
+          let parsed = null;
+          try {
+            parsed = JSON.parse(data);
+          } catch (err) {
+            parsed = { raw: data };
+          }
+
+          if (response.statusCode < 200 || response.statusCode >= 300) {
+            const error = new Error('LifetimeSMS request failed');
+            error.status = response.statusCode;
+            error.details = parsed;
+            return reject(error);
+          }
+
+          return resolve({ statusCode: response.statusCode, response: parsed });
+        });
+      }
+    );
+
+    request.on('error', (err) => reject(err));
+    request.write(postData);
+    request.end();
+  });
+
 /**
- * Send an SMS via Twilio.
+ * Send an SMS via LifetimeSMS.
  *
  * Env vars:
- * - TWILIO_SID
- * - TWILIO_AUTH_TOKEN
- * - TWILIO_MESSAGING_SERVICE_SID (preferred)
- *   OR
- * - TWILIO_PHONE_NUMBER (fallback: Twilio "from" number)
+ * - LIFETIMESMS_API_TOKEN
+ * - LIFETIMESMS_API_SECRET
+ * - LIFETIMESMS_SENDER (max 11 chars)
  */
 const sendSMS = async (phone, message) => {
   const smsEnabled = String(process.env.SMS_ENABLED ?? 'true').toLowerCase();
@@ -72,34 +137,42 @@ const sendSMS = async (phone, message) => {
     return { skipped: true, reason: 'SMS_ENABLED=false' };
   }
 
-  // By default, avoid consuming Twilio quota in non-production unless explicitly forced.
+  // By default, avoid consuming SMS quota in non-production unless explicitly forced.
   const forceSend = String(process.env.SMS_FORCE_SEND ?? 'false').toLowerCase();
   const shouldForceSend = forceSend === 'true' || forceSend === '1' || forceSend === 'yes';
   if (process.env.NODE_ENV !== 'production' && !shouldForceSend) {
-    const to = normalizePhoneToE164(phone);
+    const to = normalizePhoneToLifetime(phone);
     return { skipped: true, reason: 'SMS skipped in non-production', to };
   }
 
   const dryRun = String(process.env.SMS_DRY_RUN ?? 'false').toLowerCase();
   if (dryRun === 'true' || dryRun === '1' || dryRun === 'yes') {
-    const to = normalizePhoneToE164(phone);
+    const to = normalizePhoneToLifetime(phone);
     const body = String(message || '').trim();
-    console.log('[sendSMS] DRY_RUN - not sending via Twilio', { to, bodyPreview: body.slice(0, 140) });
+    console.log('[sendSMS] DRY_RUN - not sending via LifetimeSMS', {
+      to,
+      bodyPreview: body.slice(0, 140),
+    });
     return { skipped: true, reason: 'SMS_DRY_RUN=true', to };
   }
 
-  const client = getTwilioClient();
+  const apiToken = String(process.env.LIFETIMESMS_API_TOKEN || '4b491b5f84804a5e8030b43d6577eb5f011c5b10772').trim();
+  const apiSecret = String(process.env.LIFETIMESMS_API_SECRET || 'ali').trim();
 
-  if (!client) {
-    console.warn('[sendSMS] Skipping SMS: TWILIO_SID/TWILIO_AUTH_TOKEN not configured');
+  if (!apiToken || !apiSecret) {
+    console.warn('[sendSMS] Skipping SMS: LIFETIMESMS_API_TOKEN/LIFETIMESMS_API_SECRET not configured');
     return { skipped: true };
   }
 
-  const to = normalizePhoneToE164(phone);
+  const normalizedTo = normalizePhoneToLifetime(phone);
+  const toList = String(normalizedTo)
+    .split(',')
+    .map((entry) => entry.trim())
+    .filter(Boolean);
 
-  if (!isValidE164Phone(to)) {
+  if (toList.length === 0 || toList.some((entry) => !isValidLifetimePhone(entry))) {
     const err = new Error(
-      'Invalid phone number. Use E.164 format with country code (e.g., +923001234567), or Pakistan format 03XXXXXXXXX.'
+      'Invalid phone number. Use Pakistan format 03XXXXXXXXX or E.164 format +923001234567.'
     );
     err.code = 'INVALID_PHONE';
     throw err;
@@ -112,45 +185,35 @@ const sendSMS = async (phone, message) => {
     throw err;
   }
 
-  const baseArgs = {
-    body,
-    to,
-  };
-
-  const { TWILIO_MESSAGING_SERVICE_SID, TWILIO_PHONE_NUMBER } = process.env;
-
-  const trySend = async (args) => {
-    const response = await client.messages.create(args);
-    return {
-      skipped: false,
-      sid: response.sid,
-      status: response.status,
-      to,
-    };
-  };
-
-  // Prefer Messaging Service when available; fallback to explicit from-number.
-  if (TWILIO_MESSAGING_SERVICE_SID) {
-    try {
-      return await trySend({ ...baseArgs, messagingServiceSid: TWILIO_MESSAGING_SERVICE_SID });
-    } catch (err) {
-      // If Messaging Service fails and a from-number exists, retry once.
-      if (TWILIO_PHONE_NUMBER) {
-        return await trySend({ ...baseArgs, from: TWILIO_PHONE_NUMBER });
-      }
-      throw err;
-    }
+  const sender = 'SMS Alert';
+  if (!sender) {
+    const err = new Error('SMS sender ID is required (max 11 chars).');
+    err.code = 'INVALID_SENDER';
+    throw err;
   }
 
-  if (TWILIO_PHONE_NUMBER) {
-    return await trySend({ ...baseArgs, from: TWILIO_PHONE_NUMBER });
+  if (sender.length > 11) {
+    const err = new Error('SMS sender ID must be 11 characters or less.');
+    err.code = 'INVALID_SENDER_LENGTH';
+    throw err;
   }
 
-  const err = new Error(
-    'Twilio sender not configured. Set TWILIO_MESSAGING_SERVICE_SID or TWILIO_PHONE_NUMBER.'
-  );
-  err.code = 'TWILIO_SENDER_NOT_CONFIGURED';
-  throw err;
+  const params = new URLSearchParams({
+    api_token: apiToken,
+    api_secret: apiSecret,
+    to: toList.join(','),
+    from: sender,
+    message: body,
+  });
+
+  const response = await postLifetimeSms(params);
+  console.log('[sendSMS] LifetimeSMS response', response.response);
+  return {
+    skipped: false,
+    to: toList.join(','),
+    status: response.statusCode,
+    response: response.response,
+  };
 };
 
 module.exports = sendSMS;

@@ -38,13 +38,11 @@ This is the backend for the Royal Cell Spot e-commerce website.
     # Frontend URL used to build the tracking link in SMS
     FRONTEND_URL=http://localhost:5173
 
-    # Twilio (SMS)
-    TWILIO_SID=<YOUR_TWILIO_ACCOUNT_SID>
-    TWILIO_AUTH_TOKEN=<YOUR_TWILIO_AUTH_TOKEN>
-    # Preferred (recommended)
-    TWILIO_MESSAGING_SERVICE_SID=<YOUR_MESSAGING_SERVICE_SID>
-    # Or fallback sender number (if you don't use Messaging Service)
-    TWILIO_PHONE_NUMBER=<YOUR_TWILIO_PHONE_NUMBER>
+    # LifetimeSMS (SMS)
+    LIFETIMESMS_API_TOKEN=4b491b5f84804a5e8030b43d6577eb5f011c5b10772
+    LIFETIMESMS_API_SECRET=ali
+    # Sender ID (max 6 characters)
+    LIFETIMESMS_SENDER=Brand
     ```
 
 4.  **Run the server**
